@@ -1,0 +1,15 @@
+# Dependencies
+node_modules/
+
+# Local settings and secrets
+.env
+.env.*
+!.env.example
+
+# Build outputs
+dist/
+coverage/
+
+# macOS and editor files
+.DS_Store
+.vscode/
