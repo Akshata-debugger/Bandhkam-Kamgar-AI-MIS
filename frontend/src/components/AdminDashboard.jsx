@@ -2,7 +2,7 @@ import { Bell, ChevronRight, ClipboardList, FileClock, GraduationCap, LayoutDash
 import './AdminDashboard.css'
 
 const cards = [
-  ['Total Workers', '12,500', Users, '8.4% from last month'], ['Active Cards', '9,842', WalletCards, '78.7% active'], ['Pending Renewals', '318', RefreshCw, 'Needs attention'], ['Pending Applications', '146', FileClock, 'Awaiting review'], ['Scholarships', '73', GraduationCap, 'This month'],
+  ['Total Workers', '—', Users, 'Live data after staff login'], ['Active Workers', '—', WalletCards, 'Live data after staff login'], ['Expired Cards', '—', RefreshCw, 'Live data after staff login'], ['Pending Verification', '—', FileClock, 'Live data after staff login'], ['Pending Applications', '—', GraduationCap, 'Live data after staff login'],
 ]
 const notices = ['Renewal verification deadline is approaching.', '12 new applications were received today.', 'Scholarship records are ready for review.']
 
