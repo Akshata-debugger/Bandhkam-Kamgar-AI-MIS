@@ -1,7 +1,7 @@
 export const heroSlides = [
   {
     image: 'https://images.unsplash.com/photo-1593113598332-cd288d649433?auto=format&fit=crop&w=1800&q=85',
-    eyebrow: 'Bandhkam Kamgar Yojana',
+    eyebrow: 'रत्नागिरी जिल्हा जनरल कामगार युनियन (संलग्न सीटू)',
     title: 'Support for the hands that build Maharashtra.',
     text: 'A welcoming digital gateway for construction workers, their families, and welfare services.',
   },
