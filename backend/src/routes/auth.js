@@ -68,8 +68,13 @@ router.post('/login', async (request, response) => {
       return response.status(401).json({ message: 'Invalid username/email or password.' })
     }
 
+    if (!process.env.JWT_SECRET) {
+      throw new Error('JWT_SECRET is not configured.')
+    }
+
     const token = request.app.locals.jwt.sign(
       { role: user.role, username: user.username },
+      process.env.JWT_SECRET,
       { expiresIn: process.env.JWT_EXPIRES_IN || '8h', subject: String(user.id) },
     )
 
