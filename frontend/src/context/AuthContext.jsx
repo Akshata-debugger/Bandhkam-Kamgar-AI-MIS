@@ -1,0 +1,5 @@
+import { createContext, useContext, useEffect, useMemo, useState } from 'react'
+import { api } from '../services/apiClient'
+const AuthContext=createContext(null);const key='rdgwu_auth'
+export function AuthProvider({children}){const[session,setSession]=useState(()=>{try{return JSON.parse(localStorage.getItem(key))}catch{return null}});const[expired,setExpired]=useState(false);const logout=()=>{localStorage.removeItem(key);setSession(null)};useEffect(()=>{const onExpired=()=>{logout();setExpired(true)};window.addEventListener('auth:expired',onExpired);return()=>window.removeEventListener('auth:expired',onExpired)},[]);const value=useMemo(()=>({session,token:session?.token,user:session?.user,expired,clearExpired:()=>setExpired(false),logout,async login(identifier,password){const result=await api('/auth/login',{method:'POST',body:{identifier,password}});const next={token:result.token,user:result.user};localStorage.setItem(key,JSON.stringify(next));setSession(next);return next}}),[session,expired]);return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>}
+export const useAuth=()=>useContext(AuthContext)
