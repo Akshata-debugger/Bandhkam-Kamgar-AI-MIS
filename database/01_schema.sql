@@ -1,4 +1,4 @@
--- Bandhkam Kamgar AI MIS Portal
+-- Ratnagiri District General Workers Union MIS Portal
 -- Phase 2: MySQL database schema
 -- MySQL 8.0+
 

@@ -28,13 +28,13 @@ app.get('/api/health', async (_request, response) => {
 
     response.json({
       database: 'connected',
-      message: 'Bandhkam Kamgar API is running',
+      message: 'Ratnagiri District General Workers Union API is running',
       status: 'ok',
     })
   } catch (error) {
     response.status(503).json({
       database: 'unavailable',
-      message: 'Bandhkam Kamgar API is running, but the database is unavailable',
+      message: 'Ratnagiri District General Workers Union API is running, but the database is unavailable',
       status: 'error',
     })
   }
@@ -52,7 +52,7 @@ async function startServer() {
   }
 
   app.listen(port, () => {
-  console.log(`Bandhkam Kamgar API listening on http://localhost:${port}`)
+  console.log(`Ratnagiri District General Workers Union API listening on http://localhost:${port}`)
   })
 }
 

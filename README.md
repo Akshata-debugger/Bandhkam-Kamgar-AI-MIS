@@ -1,6 +1,6 @@
-# Bandhkam Kamgar AI MIS Portal
+# Ratnagiri District General Workers Union MIS Portal
 
-Management Information System for the Bandhkam Kamgar Yojana, Government of Maharashtra.
+Management Information System for रत्नागिरी जिल्हा जनरल कामगार युनियन (संलग्न सीटू).
 
 ## Technology
 
