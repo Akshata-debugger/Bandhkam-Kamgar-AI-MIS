@@ -1,6 +1,7 @@
 import bcrypt from 'bcrypt'
 import { Router } from 'express'
 import getDatabasePool from '../db.js'
+import { authenticate } from '../middleware/authMiddleware.js'
 
 const router = Router()
 
@@ -38,7 +39,7 @@ export async function createDefaultAdminIfNeeded() {
 }
 
 router.post('/login', async (request, response) => {
-  const { email, identifier, password, username } = request.body
+  const { email, identifier, password, username, rememberMe } = request.body
   const loginIdentifier = String(identifier || username || email || '').trim()
 
   if (!loginIdentifier || typeof password !== 'string' || !password) {
@@ -75,8 +76,9 @@ router.post('/login', async (request, response) => {
     const token = request.app.locals.jwt.sign(
       { role: user.role, username: user.username },
       process.env.JWT_SECRET,
-      { expiresIn: process.env.JWT_EXPIRES_IN || '8h', subject: String(user.id) },
+      { expiresIn: rememberMe ? '30d' : (process.env.JWT_EXPIRES_IN || '8h'), subject: String(user.id) },
     )
+    await pool.execute('UPDATE users SET last_login_at=CURRENT_TIMESTAMP WHERE id=?',[user.id])
 
     return response.json({
       message: 'Login successful.',
@@ -93,6 +95,18 @@ router.post('/login', async (request, response) => {
     console.error('Login failed:', error.message)
     return response.status(500).json({ message: 'Unable to complete login.' })
   }
+})
+
+router.post('/change-password', authenticate, async (request, response) => {
+  const { currentPassword, newPassword, confirmPassword } = request.body
+  if (!currentPassword || !newPassword || newPassword !== confirmPassword) return response.status(400).json({ message: 'Please provide matching passwords.' })
+  if (newPassword.length < 8 || !/[A-Z]/.test(newPassword) || !/[a-z]/.test(newPassword) || !/[0-9]/.test(newPassword)) return response.status(400).json({ message: 'Use at least 8 characters with uppercase, lowercase, and a number.' })
+  try {
+    const pool = getDatabasePool(); const [rows] = await pool.execute('SELECT password_hash FROM users WHERE id=?',[request.user.sub])
+    if (!rows[0] || !await bcrypt.compare(currentPassword,rows[0].password_hash)) return response.status(401).json({ message: 'Current password is incorrect.' })
+    await pool.execute('UPDATE users SET password_hash=? WHERE id=?',[await bcrypt.hash(newPassword,12),request.user.sub])
+    response.status(204).end()
+  } catch (error) { response.status(500).json({ message: 'Unable to change password.' }) }
 })
 
 export default router

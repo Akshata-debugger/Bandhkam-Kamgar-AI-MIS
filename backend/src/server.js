@@ -5,6 +5,7 @@ import { verifyDatabaseConnection } from './db.js'
 import authRoutes, { createDefaultAdminIfNeeded } from './routes/auth.js'
 import jwt from 'jsonwebtoken'
 import workerRoutes from './routes/workers.js'
+import staffRoutes from './routes/staff.js'
 
 dotenv.config()
 
@@ -21,6 +22,7 @@ app.use(cors({ origin: process.env.CLIENT_URL || 'http://localhost:5173' }))
 app.use(express.json())
 app.use('/api/auth', authRoutes)
 app.use('/api/workers', workerRoutes)
+app.use('/api/staff', staffRoutes)
 
 app.get('/api/health', async (_request, response) => {
   try {
