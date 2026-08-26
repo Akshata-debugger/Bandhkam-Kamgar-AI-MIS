@@ -4,6 +4,7 @@ import HomePage from './components/HomePage'
 import WorkerManagement from './components/WorkerManagement'
 import StaffLogin from './components/StaffLogin'
 import StaffManagement from './components/StaffManagement'
+import ProfileMenu from './components/ProfileMenu'
 import { AuthProvider, useAuth } from './context/AuthContext'
 import './App.css'
 
@@ -16,12 +17,14 @@ function Portal() {
     return () => window.removeEventListener('hashchange', syncView)
   }, [])
 
-  if (view === 'home') return <HomePage onOpenDashboard={() => setView(session ? 'dashboard' : 'login')} />
-  if (view === 'login') return <StaffLogin onBack={() => setView('home')} onSuccess={() => setView('dashboard')} />
-  if (!session) return <StaffLogin onBack={() => setView('home')} onSuccess={() => setView('dashboard')} />
-  if (view === 'workers') return <WorkerManagement onBack={() => { window.location.hash = '#dashboard'; setView('dashboard') }} />
-  if (view === 'staff') return session.user.role === 'admin' ? <StaffManagement onBack={() => { window.location.hash = '#dashboard'; setView('dashboard') }} /> : <StaffLogin onBack={() => setView('home')} onSuccess={() => setView('dashboard')} />
-  return <AdminDashboard onOpenWebsite={() => setView('home')} />
+  let content
+  if (view === 'home') content = <HomePage onOpenDashboard={() => setView(session ? 'dashboard' : 'login')} />
+  else if (view === 'login' || !session) content = <StaffLogin onBack={() => setView('home')} onSuccess={() => setView('dashboard')} />
+  else if (view === 'workers') content = <WorkerManagement onBack={() => { window.location.hash = '#dashboard'; setView('dashboard') }} />
+  else if (view === 'staff') content = session.user.role === 'admin' ? <StaffManagement onBack={() => { window.location.hash = '#dashboard'; setView('dashboard') }} /> : <StaffLogin onBack={() => setView('home')} onSuccess={() => setView('dashboard')} />
+  else content = <AdminDashboard onOpenWebsite={() => setView('home')} />
+
+  return session && !['home', 'login'].includes(view) ? <><ProfileMenu />{content}</> : content
 }
 
 function App() { return <AuthProvider><Portal /></AuthProvider> }

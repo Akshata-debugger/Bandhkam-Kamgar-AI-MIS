@@ -51,7 +51,7 @@ router.post('/login', async (request, response) => {
   try {
     const pool = getDatabasePool()
     const [users] = await pool.execute(
-      `SELECT id, full_name, username, email, password_hash, role, is_active
+      `SELECT id, full_name, username, email, mobile_number, password_hash, role, is_active, last_login_at
        FROM users
        WHERE username = ? OR email = ?
        LIMIT 1`,
@@ -87,6 +87,9 @@ router.post('/login', async (request, response) => {
         email: user.email,
         fullName: user.full_name,
         id: user.id,
+        isActive: Boolean(user.is_active),
+        lastLoginAt: new Date().toISOString(),
+        mobileNumber: user.mobile_number,
         role: user.role,
         username: user.username,
       },
