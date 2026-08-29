@@ -1,2 +1,10 @@
-// Phase 6 foundation: Phase 7 will provide an authenticated Google Sheets adapter.
-export class GoogleSheetsService { async readRows() { throw new Error('Google Sheets connection is not configured yet.'); } async writeRows() { throw new Error('Google Sheets connection is not configured yet.'); } }
+import path from 'node:path'
+import { google } from 'googleapis'
+const normaliseHeader=(value)=>String(value||'').trim().toLowerCase().replace(/[^a-z0-9]+/g,'_').replace(/^_|_$/g,'')
+export class GoogleSheetsService {
+ constructor(){this.spreadsheetId=process.env.GOOGLE_SPREADSHEET_ID||'1d7aKE8TzLbYzkMOgrIfWchXH1EAplK94';this.keyFile=path.resolve(process.cwd(),process.env.GOOGLE_SERVICE_ACCOUNT_FILE||'config/google-service-account.json');this.auth=new google.auth.GoogleAuth({keyFile:this.keyFile,scopes:['https://www.googleapis.com/auth/spreadsheets.readonly','https://www.googleapis.com/auth/drive']});this.sheets=google.sheets({version:'v4',auth:this.auth});this.drive=google.drive({version:'v3',auth:this.auth})}
+ async workbook(){return (await this.sheets.spreadsheets.get({spreadsheetId:this.spreadsheetId,includeGridData:false})).data}
+ async testConnection(){const book=await this.workbook();const tabs=book.sheets?.map(s=>s.properties?.title).filter(Boolean)||[];if(!tabs.length)throw new Error('The spreadsheet has no worksheets.');const first=await this.sheets.spreadsheets.values.get({spreadsheetId:this.spreadsheetId,range:`'${tabs[0].replaceAll("'","''")}'!1:1`});return {connected:true,spreadsheetId:this.spreadsheetId,spreadsheetName:book.properties?.title||'Untitled spreadsheet',sheets:tabs,headers:(first.data.values?.[0]||[]).map(normaliseHeader)}}
+ async readWorkbook(){const book=await this.workbook();const output=[];for(const sheet of book.sheets||[]){const name=sheet.properties?.title;if(!name)continue;try{const response=await this.sheets.spreadsheets.values.get({spreadsheetId:this.spreadsheetId,range:`'${name.replaceAll("'","''")}'`});output.push({name,values:response.data.values||[]})}catch(error){output.push({name,error:error.message,values:[]})}}return {spreadsheetName:book.properties?.title||'Untitled spreadsheet',sheets:output}}
+ async backup(folderId){if(!folderId)throw new Error('GOOGLE_DRIVE_BACKUP_FOLDER_ID is not configured.');const name=`Ratnagiri-Union-Data-Backup-${new Intl.DateTimeFormat('en-GB').format(new Date()).replaceAll('/','-')}`;const result=await this.drive.files.copy({fileId:this.spreadsheetId,requestBody:{name,parents:[folderId]}});return {id:result.data.id,name:result.data.name}}
+}
