@@ -7,6 +7,7 @@ import StaffManagement from './components/StaffManagement'
 import ProfileMenu from './components/ProfileMenu'
 import PublicCmsPage from './components/PublicCmsPage'
 import LeadershipCards from './components/LeadershipCards'
+import PublicGallery from './components/PublicGallery'
 import { AuthProvider, useAuth } from './context/AuthContext'
 import './App.css'
 
@@ -23,7 +24,7 @@ function Portal() {
 
   let content
   if (view === 'home') content = <HomePage onOpenDashboard={() => setView(session ? 'dashboard' : 'login')} />
-  else if (view === 'public') content = window.location.hash === '#leadership' ? <LeadershipCards /> : <PublicCmsPage />
+  else if (view === 'public') content = window.location.hash === '#leadership' ? <LeadershipCards /> : window.location.hash === '#gallery' ? <PublicGallery /> : <PublicCmsPage />
   else if (view === 'login' || !session) content = <StaffLogin onBack={() => setView('home')} onSuccess={() => setView('dashboard')} />
   else if (view === 'workers') content = <WorkerManagement onBack={() => { window.location.hash = '#dashboard'; setView('dashboard') }} />
   else if (view === 'staff') content = session.user.role === 'admin' ? <StaffManagement onBack={() => { window.location.hash = '#dashboard'; setView('dashboard') }} /> : <StaffLogin onBack={() => setView('home')} onSuccess={() => setView('dashboard')} />

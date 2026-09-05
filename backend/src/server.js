@@ -7,6 +7,7 @@ import jwt from 'jsonwebtoken'
 import workerRoutes from './routes/workers.js'
 import staffRoutes from './routes/staff.js'
 import importRoutes from './routes/imports.js'
+import publicSiteRoutes from './routes/publicSite.js'
 
 dotenv.config()
 
@@ -25,6 +26,7 @@ app.use('/api/auth', authRoutes)
 app.use('/api/workers', workerRoutes)
 app.use('/api/staff', staffRoutes)
 app.use('/api/imports', importRoutes)
+app.use('/api/public', publicSiteRoutes)
 
 app.get('/api/health', async (_request, response) => {
   try {
